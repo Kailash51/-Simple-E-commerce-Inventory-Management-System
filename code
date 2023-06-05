@@ -18,8 +18,8 @@ class Product {
         return stock;
     }
 
-    public void setStock(int stock) {
-        this.stock = stock;
+    public void updateStock(int quantity) {
+        stock += quantity;
     }
 }
 
@@ -32,40 +32,40 @@ class Inventory {
 
     public void addProduct(String name, int stock) {
         if (products.containsKey(name)) {
-            System.out.println("Product already exists.");
-            return;
+            System.out.println("Product already exists in the inventory.");
+        } else {
+            products.put(name, new Product(name, stock));
+            System.out.println("Product added successfully.");
         }
-        Product product = new Product(name, stock);
-        products.put(name, product);
-        System.out.println("Product added: " + name);
     }
 
-    public void updateProduct(String name, int stock) {
+    public void updateProductStock(String name, int quantity) {
         Product product = products.get(name);
-        if (product == null) {
-            System.out.println("Product not found.");
-            return;
+        if (product != null) {
+            product.updateStock(quantity);
+            System.out.println("Stock updated successfully.");
+        } else {
+            System.out.println("Product does not exist in the inventory.");
         }
-        product.setStock(stock);
-        System.out.println("Product updated: " + name);
     }
 
     public void removeProduct(String name) {
-        if (!products.containsKey(name)) {
-            System.out.println("Product not found.");
-            return;
+        Product product = products.remove(name);
+        if (product != null) {
+            System.out.println("Product removed successfully.");
+        } else {
+            System.out.println("Product does not exist in the inventory.");
         }
-        products.remove(name);
-        System.out.println("Product removed: " + name);
     }
 
-    public void checkStock(String name) {
+    public int checkStock(String name) {
         Product product = products.get(name);
-        if (product == null) {
-            System.out.println("Product not found.");
-            return;
+        if (product != null) {
+            return product.getStock();
+        } else {
+            System.out.println("Product does not exist in the inventory.");
+            return 0;
         }
-        System.out.println("Stock for " + name + ": " + product.getStock());
     }
 }
 
@@ -73,15 +73,18 @@ public class Main {
     public static void main(String[] args) {
         Inventory inventory = new Inventory();
 
-        inventory.addProduct("Shirt", 10);
-        inventory.addProduct("Pants", 15);
+        inventory.addProduct("Item 1", 10);
+        inventory.addProduct("Item 2", 5);
 
-        inventory.checkStock("Shirt"); // Output: Stock for Shirt: 10
+        System.out.println("Stock of Item 1: " + inventory.checkStock("Item 1"));
+        System.out.println("Stock of Item 2: " + inventory.checkStock("Item 2"));
 
-        inventory.updateProduct("Shirt", 20);
-        inventory.checkStock("Shirt"); // Output: Stock for Shirt: 20
+        inventory.updateProductStock("Item 1", -2);
+        System.out.println("Updated stock of Item 1: " + inventory.checkStock("Item 1"));
 
-        inventory.removeProduct("Pants");
-        inventory.checkStock("Pants"); // Output: Product not found.
+        inventory.updateProductStock("Item 3", 3);
+
+        inventory.removeProduct("Item 2");
+        System.out.println("Stock of Item 2: " + inventory.checkStock("Item 2"));
     }
 }
